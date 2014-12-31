@@ -39,7 +39,7 @@ def validate_access_code():
 
 @get('/')
 def home():
-    return '<img src="http://i1.kym-cdn.com/photos/images/newsfeed/000/345/309/5eb.gif">'
+    return '<h1>Nope.</h1>'
 
 
 @post('/webhook')
