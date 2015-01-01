@@ -51,10 +51,11 @@ class Builder(object):
 
     """
 
-    def __init__(self, name, repo_url, commit):
+    def __init__(self, name, repo_url, commit, branch='master'):
         self.name = name
         self.repo_url = repo_url
         self.commit = commit
+        self.branch = branch
         if repo_url.startswith('https://'):
             self.clone_url = repo_url + '.git'
         elif repo_url.startswith('git://') or repo_url.endswith('.git'):
@@ -101,10 +102,12 @@ class Builder(object):
 
 
     def _clone(self):
-        """Clone repository to build folder."""
+        """Clone repository to build folder (shallow clone)."""
         if os.path.isdir(self.clone_dir) and os.listdir(self.clone_dir):
             shutil.rmtree(self.clone_dir)
-        if subprocess.call(['git', 'clone', self.clone_url, self.clone_dir]) != 0:
+        #  git clone --branch dev --single-branch --depth 1 git@github.com:fin-8/latex-ci.git latex-ci/dev/
+        if subprocess.call(['git', 'clone', '--branch', self.branch, '--single-branch', '--depth', GIT_SHALLOW_CLONE_DEPTH, self.clone_url, self.clone_dir]) != 0:
+        #if subprocess.call(['git', 'clone', self.clone_url, self.clone_dir]) != 0:
             raise RuntimeError('Git clone failed')
         with chdir(self.clone_dir):
             if os.getcwd() != self.clone_dir:
