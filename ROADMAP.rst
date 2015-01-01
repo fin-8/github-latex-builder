@@ -34,3 +34,8 @@ Bitbucket integration
 The server should work with Bitbucket as well.
 Possibility to include read-access-only `Deployment Keys <https://confluence.atlassian.com/x/I4CNEQ>`_
 would be nice.
+
+Add Logging support
+-------------------
+
+Include the python Logging module to be able to split the server logs from compile logs.
