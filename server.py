@@ -47,7 +47,7 @@ def store():
     """Webhook for notifications about a new commit on Github."""
     validate_access_code()
     try:
-        data = json.loads(request.POST['payload'])
+        data = request.json
     except ValueError:
         abort(400, 'Bad request: Could not decode request body.')
     name = data['repository']['name']
