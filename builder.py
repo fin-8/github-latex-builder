@@ -115,7 +115,7 @@ class Builder(object):
 
     def _build(self):
         """Build specified commit."""
-        if os.path.isfile(os.path.join(self.clone_dir, 'Makefile')):
+        if os.path.isfile(os.path.join(self.clone_dir, 'makefile')):
             with chdir(self.clone_dir):
                 if subprocess.call(['make']) != 0:
                     raise RuntimeError('make failed')
