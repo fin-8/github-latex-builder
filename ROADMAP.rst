@@ -8,7 +8,7 @@ Directory Structure
 
 The directory structure should include a branch name, to allow
 multi-user-multi-branch development. Target files should be available
-at `<target_dir>/<repo_name>/<branch_name>/` or so.
+at ``<target_dir>/<repo_name>/<branch_name>/`` or so.
 
 Configuration File
 ------------------
@@ -23,10 +23,10 @@ User Interface
 The system should include a user interface with information regarding
 compile status, logfile display and possibly a small and simple
 configuration interface.
-At some point the `stdout` of the build process should be available
+At some point the ``stdout`` of the build process should be available
 as a web stream with syntax highlighting and build error analyzation
 (tabular display for those who don't like poring about logfiles).
-The generation of travis-like `build: passing` status images would be nice as well.
+The generation of travis-like ``build: passing`` status images would be nice as well.
 
 Bitbucket integration
 ---------------------
