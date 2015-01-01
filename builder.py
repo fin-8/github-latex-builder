@@ -1,3 +1,6 @@
+#!/usr/bin/env python2.7
+# coding: utf-8
+
 from __future__ import with_statement  # py2.5
 import os
 import errno
@@ -16,7 +19,7 @@ PERM_777 = ( s.S_IRUSR | s.S_IWUSR | s.S_IXUSR
            | s.S_IROTH | s.S_IWOTH | s.S_IXOTH )
 
 
-@contextlib.contextmanager  
+@contextlib.contextmanager
 def chdir(dirname):
     """Context manager to change the cwd."""
     curdir = os.getcwd()
@@ -29,7 +32,7 @@ def chdir(dirname):
 
 class Builder(object):
     """The LaTeX Builder class. Builds PDFs via Make or latexmk.
-    
+
     Algorithm:
 
     - Create ``build`` directory and ``pdf`` directories, if they don't exist.
@@ -45,7 +48,7 @@ class Builder(object):
     - Recursively find all ``pdf`` documents in the build dir. Copy them to ``pdf/<reponame>/``.
 
     - Remove Lockfile.
-        
+
     """
 
     def __init__(self, name, repo_url, commit):
