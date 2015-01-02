@@ -10,6 +10,8 @@ The directory structure should include a branch name, to allow
 multi-user-multi-branch development. Target files should be available
 at ``<target_dir>/<repo_name>/<branch_name>/`` or so.
 
+As of commit 2bca859 this is the case!
+
 Configuration File
 ------------------
 
