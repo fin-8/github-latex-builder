@@ -9,6 +9,7 @@ import contextlib
 import subprocess
 import shutil
 import stat as s
+from yaml import load as yml_load
 
 
 PERM_666 = ( s.S_IRUSR | s.S_IWUSR
@@ -117,6 +118,18 @@ class Builder(object):
                 raise RuntimeError('Git submodule update failed')
             if subprocess.call(['git', 'checkout', self.commit]) != 0:
                 raise RuntimeError('Git checkout failed')
+
+    def _configure(self):
+        self.config = conf.DEFAULT_CONFIG
+        config_file = os.path.join(self.clone_dir, conf.CONFIG_FILE_NAME)
+
+        if os.path.isfile(config_file):
+            try:
+                user_config = yml_load(file(config_file, 'r'))
+            except Exception as e:
+                return #TODO: do something
+
+            self.config.update(user_config)
 
     def _build(self):
         """Build specified commit."""
