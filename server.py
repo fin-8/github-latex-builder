@@ -56,9 +56,10 @@ def store():
     name = data['repository']['name']
     repo_url = data['repository']['url']
     commit = data['after']
+    branch = data['ref'].split('/')[-1]
     if data['repository']['private'] is True:
         repo_url = repo_url.replace('https://github.com/', 'git@github.com:') + '.git'
-    b = builder.Builder(name, repo_url, commit)
+    b = builder.Builder(name, repo_url, branch, commit)
     p = multiprocessing.Process(target=b.run)
     p.start()
     raise HTTPResponse('Started build process in background.\n', 202)

@@ -42,16 +42,15 @@ class Builder(object):
     - Clone repo into ``build/<reponame>/<commit-id>/``.
 
     - Try to run ``make`` inside repo name.
-    - If no Makefile exists, look for .tex-files in the root directory. Build them via ``latexmk``.
 
-    - Clean ``pdf/<reponame>/`` directory.
-    - Recursively find all ``pdf`` documents in the build dir. Copy them to ``pdf/<reponame>/``.
+    - Clean ``pdf/<reponame>/<branchname>/`` directory.
+    - Recursively find all ``pdf`` documents in the build dir. Copy them to ``pdf/<reponame>/<branchname>/``.
 
     - Remove Lockfile.
 
     """
 
-    def __init__(self, name, repo_url, commit, branch='master'):
+    def __init__(self, name, repo_url, branch, commit):
         self.name = name
         self.repo_url = repo_url
         self.commit = commit
@@ -78,7 +77,7 @@ class Builder(object):
         self.build_dir = os.path.join(os.getcwdu(), conf.BUILD_DIR_NAME)
         self.pdf_dir = os.path.join(os.getcwdu(), conf.PDF_DIR_NAME)
         self.repo_build_dir = os.path.join(self.build_dir, self.name)
-        self.repo_pdf_dir = os.path.join(self.pdf_dir, self.name)
+        self.repo_pdf_dir = os.path.join(self.pdf_dir, self.name, self.branch)
         self.clone_dir = os.path.join(self.repo_build_dir, self.commit)
         self.lockfile_name = os.path.join(self.repo_build_dir, '.' + self.commit)
 
@@ -106,7 +105,7 @@ class Builder(object):
         if os.path.isdir(self.clone_dir) and os.listdir(self.clone_dir):
             shutil.rmtree(self.clone_dir)
         #  git clone --branch dev --single-branch --depth 1 git@github.com:fin-8/latex-ci.git latex-ci/dev/
-        if subprocess.call(['git', 'clone', '--branch', self.branch, '--single-branch', '--depth', GIT_SHALLOW_CLONE_DEPTH, self.clone_url, self.clone_dir]) != 0:
+        if subprocess.call(['git', 'clone', '--branch', self.branch, '--single-branch', '--depth', str(conf.GIT_SHALLOW_CLONE_DEPTH), self.clone_url, self.clone_dir]) != 0:
         #if subprocess.call(['git', 'clone', self.clone_url, self.clone_dir]) != 0:
             raise RuntimeError('Git clone failed')
         with chdir(self.clone_dir):
