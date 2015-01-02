@@ -19,6 +19,10 @@ The compilation should use a makefile, but the target should be
 selectable by the user. Furthermore, the user should be able to configure
 primary targets (pdf files, etc.) and secondary targets (logfiles).
 
+Working! The user may configure stuff in ``config.yml``.
+But now there's documentation of configurable options missing.
+coming soon...
+
 User Interface
 --------------
 

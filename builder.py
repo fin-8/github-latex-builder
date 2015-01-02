@@ -107,7 +107,6 @@ class Builder(object):
             shutil.rmtree(self.clone_dir)
         #  git clone --branch dev --single-branch --depth 1 git@github.com:fin-8/latex-ci.git latex-ci/dev/
         if subprocess.call(['git', 'clone', '--branch', self.branch, '--single-branch', '--depth', str(conf.GIT_SHALLOW_CLONE_DEPTH), self.clone_url, self.clone_dir]) != 0:
-        #if subprocess.call(['git', 'clone', self.clone_url, self.clone_dir]) != 0:
             raise RuntimeError('Git clone failed')
         with chdir(self.clone_dir):
             if os.getcwd() != self.clone_dir:
@@ -131,12 +130,21 @@ class Builder(object):
 
             self.config.update(user_config)
 
+            for key in ['make_build_targets', 'target_files']:
+                if self.config[key] is not None and type(self.config[key]) is not list:
+                    self.config[key] = [self.config[key]]
+
     def _build(self):
         """Build specified commit."""
         if os.path.isfile(os.path.join(self.clone_dir, 'makefile')):
             with chdir(self.clone_dir):
-                if subprocess.call(['make']) != 0:
-                    raise RuntimeError('make failed')
+                if self.config['make_build_targets'] is None: # default target
+                    if subprocess.call(['make']) != 0:
+                        raise RuntimeError('make failed')
+                else:
+                    for target in self.config['make_build_targets']:
+                        if subprocess.call(['make', str(target)]) != 0:
+                            raise RuntimeError('make failed')
 
     def _copy(self):
         """Clean PDF directory, copy over new PDF files."""
@@ -144,17 +152,25 @@ class Builder(object):
         for f in os.listdir(self.repo_pdf_dir):
             os.remove(os.path.join(self.repo_pdf_dir, f))
 
-        for dirpath, dirs, files in os.walk(self.clone_dir, topdown=True):
-            if '.git' in dirs:
-                dirs.remove('.git')  # Don't recurse into .git directory
-            pdf_files = [f for f in files if f.endswith('.pdf')]
-            for pdf in pdf_files:
-                src = os.path.join(dirpath, pdf)
-                dst = os.path.join(self.repo_pdf_dir, pdf)
-                if os.path.isfile(dst):
-                    dst = dst[:-3] + '2.pdf'
+        if self.config['target_files'] is None:
+            for dirpath, dirs, files in os.walk(self.clone_dir, topdown=True):
+                if '.git' in dirs:
+                    dirs.remove('.git')  # Don't recurse into .git directory
+                target_files = [os.path.join(dirpath, f) for f in files if f.endswith('.pdf')]
+        else:
+            target_files = [os.path.join(self.clone_dir, f) for f in self.config['target_files']]
+
+
+        for tf in target_files:
+            if os.path.isfile(tf):
+                tf_name = os.path.basename(tf)
+                src = tf
+                dst = os.path.join(self.repo_pdf_dir, tf_name)
                 shutil.copyfile(src, dst)
-                print 'Copied file %s to pdf directory.' % pdf
+                print 'Copied file %s to target directory.' % tf_name
+            else:
+                print 'Sorry, %s could not be found.' % tf
+
 
     def _cleanup(self):
         """Do cleanups, like removing lockfiles and fixing permissions."""
@@ -176,6 +192,7 @@ class Builder(object):
         """Prepare and build specified commit."""
         self._prepare()
         self._clone()
+        self._configure()
         self._build()
         self._copy()
         self._cleanup()

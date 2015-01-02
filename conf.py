@@ -5,6 +5,6 @@ GIT_SHALLOW_CLONE_DEPTH = 10
 CONFIG_FILE_NAME = 'config.yml'
 DEFAULT_CONFIG = {
     'make_build_targets': None, # default target
-    'additional_targets': None, # no additional targets
+    'target_files': None, # no explicit targets, copy all pdf files
     'stream_log': True
 }
